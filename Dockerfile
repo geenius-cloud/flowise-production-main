@@ -5,14 +5,12 @@
 # docker run -d -p 3000:3000 flowise
 
 FROM node:20-alpine
-RUN apk add --update libc6-compat python3 make g++
-# needed for pdfjs-dist
-RUN apk add --no-cache build-base cairo-dev pango-dev
 
-# Install Chromium
-RUN apk add --no-cache chromium
+# Install necessary packages
+RUN apk add --update libc6-compat python3 py3-pip make g++ build-base cairo-dev pango-dev chromium bash curl
+RUN pip3 install boto3
 
-#install PNPM globaly
+# Install PNPM globally
 RUN npm install -g pnpm
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true
@@ -24,9 +22,19 @@ WORKDIR /usr/src
 COPY . .
 
 RUN pnpm install
-
 RUN pnpm build
+
+# Create the backup script
+RUN echo '#!/bin/bash\npython3 /usr/src/backup.py' > /usr/src/backup.sh
+RUN chmod +x /usr/src/backup.sh
+
+# Set up cron job
+RUN echo "0 16 * * * /usr/src/backup.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+
+# Ensure cron log file is created
+RUN touch /var/log/cron.log
 
 EXPOSE 3000
 
-CMD [ "pnpm", "start" ]
+# Start cron and the main service
+CMD crond && tail -f /var/log/cron.log & pnpm start
