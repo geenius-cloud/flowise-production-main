@@ -31,7 +31,7 @@ RUN pnpm install
 RUN pnpm build
 
 # Create the backup script
-RUN echo '#!/bin/bash\npython3 /usr/src/backup.py' > /usr/src/backup.sh
+RUN echo '#!/bin/bash\nsource /venv/bin/activate\npython3 /usr/src/backup.py' > /usr/src/backup.sh
 RUN chmod +x /usr/src/backup.sh
 
 # Set up cron job to run at 11:30 AM EST (16:30 UTC)
@@ -43,4 +43,4 @@ RUN touch /var/log/cron.log
 EXPOSE 3000
 
 # Start cron, run the backup script immediately, and then start the main service
-CMD crond && /usr/src/backup.sh && tail -f /var/log/cron.log & pnpm start
+CMD crond && /usr/src/backup.sh && pnpm start
