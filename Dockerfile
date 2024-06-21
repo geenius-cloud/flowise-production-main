@@ -8,10 +8,16 @@ FROM node:20-alpine
 
 # Install necessary packages
 RUN apk add --update libc6-compat python3 py3-pip make g++ build-base cairo-dev pango-dev chromium bash curl
-RUN pip3 install boto3
 
 # Install PNPM globally
 RUN npm install -g pnpm
+
+# Create a virtual environment for Python and install boto3
+RUN python3 -m venv /venv
+RUN /venv/bin/pip install boto3
+
+# Set the virtual environment as the default for all subsequent commands
+ENV PATH="/venv/bin:$PATH"
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
