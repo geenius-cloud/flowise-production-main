@@ -35,7 +35,7 @@ RUN echo '#!/bin/bash\npython3 /usr/src/backup.py' > /usr/src/backup.sh
 RUN chmod +x /usr/src/backup.sh
 
 # Set up cron job
-RUN echo "0 16 * * * /usr/src/backup.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+RUN echo "30 16 * * * /usr/src/backup.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
 
 # Ensure cron log file is created
 RUN touch /var/log/cron.log
