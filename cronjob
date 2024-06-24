@@ -1,0 +1,1 @@
+30 17 * * * python3 backup.py >> /var/log/cron.log 2>&1
