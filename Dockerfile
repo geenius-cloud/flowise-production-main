@@ -14,7 +14,7 @@ RUN npm install -g pnpm
 
 # Create a virtual environment for Python and install boto3
 RUN python3 -m venv /venv
-RUN /venv/bin/pip install boto3
+RUN /venv/bin/pip install boto3 schedule
 
 # Set the virtual environment as the default for all subsequent commands
 ENV PATH="/venv/bin:$PATH"
@@ -30,18 +30,18 @@ COPY . .
 RUN pnpm install
 RUN pnpm build
 
-# Install cron
-RUN apk add --no-cache tzdata
-RUN apk add --no-cache busybox-suid
-RUN apk add --no-cache cronie
+# # Install cron
+# RUN apk add --no-cache tzdata
+# RUN apk add --no-cache busybox-suid
+# RUN apk add --no-cache cronie
 
-# Copy the cronjob file to the container
-COPY cronjob /etc/crontabs/root
+# # Copy the cronjob file to the container
+# COPY cronjob /etc/crontabs/root
 
-# Ensure cron log file is created
-RUN touch /var/log/cron.log
+# # Ensure cron log file is created
+# RUN touch /var/log/cron.log
 
 EXPOSE 3000
 
 # Start cron and the main service
-CMD crond -f & pnpm start
+CMD python3 backup.py & pnpm start
