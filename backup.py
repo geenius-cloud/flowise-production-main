@@ -1,12 +1,14 @@
+
 import os
 import shutil
 
-from datetime import datetime
+from datetime import  datetime
+from time import sleep
 
 import boto3
+import schedule
 
-
-VOLUME_PATH = '/opt/railway/.flowise'
+VOLUME_PATH = 'GIFs-Frequently-Used'
 BACKUP_PATH = 'backups'
 S3_BUCKET = 'geenuity-railway-backups'
 S3_FOLDER = 'flowise-ai-lab/'
@@ -41,4 +43,7 @@ def main():
     print(f"Local backup file {backup_filepath} removed")
 
 if __name__ == "__main__":
-    main()
+    schedule.every().day.at("16:00").do(main)
+    while True:
+        schedule.run_pending()
+        sleep(200)
